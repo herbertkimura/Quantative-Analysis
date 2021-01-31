@@ -1,0 +1,627 @@
+Function Esperanca(Prob, Valor)
+
+n = Prob.Count
+aux = 0
+
+For i = 1 To n
+    aux = aux + Prob(i) * Valor(i)
+Next i
+
+Esperanca = aux
+
+End Function
+Function Variancia(Prob, Valor)
+
+n = Prob.Count
+aux = 0
+mu = Esperanca(Prob, Valor)
+
+For i = 1 To n
+    aux = aux + Prob(i) * (Valor(i) - mu) ^ 2
+Next i
+
+Variancia = aux
+
+End Function
+
+
+Function UnB_Esperanca(Probabilidade As Variant, _
+Valor As Variant) As Double
+
+''' Função que calcula Esperança de uma variável
+'   aleatória (discreta), a partir de dados de
+'   probabilidade e possíveis valores da variável.
+
+''' Definição de variáveis
+Dim n, i As Long
+Dim aux As Double
+
+''' Inicialização de variáveis
+n = Probabilidade.Count
+aux = 0
+
+''' Algoritmo
+'   Variável aux acumula somatório do
+'   produto entre probabilidade e valor
+For i = 1 To n
+    aux = aux + Probabilidade(i) * Valor(i)
+Next i
+
+''' Resultado
+UnB_Esperanca = aux
+
+End Function
+
+Function UnB_Variancia(Probabilidade As Variant, _
+Valor As Variant) As Double
+
+''' Função que calcula Variância de uma variável
+'   aleatória (discreta), a partir de dados de
+'   probabilidade e possíveis valores da variável.
+
+''' Definição de variáveis
+Dim n, i As Long
+Dim aux, mu As Double
+
+''' Inicialização de variáveis
+n = Probabilidade.Count
+aux = 0
+mu = UnB_Esperanca(Probabilidade, Valor)
+
+''' Algoritmo
+'   Variável aux acumula somatório do produto entre
+'   probabilidade e o erro em relação à esperança
+For i = 1 To n
+    aux = aux + Probabilidade(i) * (Valor(i) - mu) ^ 2
+Next i
+
+''' Resultado
+UnB_Variancia = aux
+
+End Function
+Function UnB_Covariancia(Probabilidade As Variant, _
+Valor1 As Variant, Valor2 As Variant) As Double
+
+''' Função que calcula Covariância de uma variável
+'   aleatória (discreta), a partir de dados de
+'   probabilidade e possíveis valores de duas variáveis.
+
+''' Definição de variáveis
+Dim n, i As Long
+Dim aux, mu1, mu2 As Double
+
+''' Inicialização de variáveis
+n = Probabilidade.Count
+aux = 0
+mu1 = UnB_Esperanca(Probabilidade, Valor1)
+mu2 = UnB_Esperanca(Probabilidade, Valor2)
+
+''' Algoritmo
+'   Variável aux acumula somatório do produto entre
+'   probabilidade e os erros em relação à esperança
+'   de cada variável
+For i = 1 To n
+    aux = aux + Probabilidade(i) * _
+    (Valor1(i) - mu1) * (Valor2(i) - mu2)
+Next i
+
+''' Resultado
+UnB_Covariancia = aux
+
+End Function
+
+Function UnB_DesvioPadrao(Probabilidade As Variant, _
+Valor As Variant) As Double
+
+''' Função que calcula Desvio-padrão de uma varável
+'   aleatória (discreta), a partir de dados de
+'   probabilidade e possíveis valores da variável.
+
+''' Definição de variáveis
+Dim aux As Double
+
+''' Algoritmo
+'   desvio-padrão equivale à
+'   raiz quadrada da variância
+aux = UnB_Variancia(Probabilidade, Valor) ^ 0.5
+
+''' Resultado
+UnB_DesvioPadrao = aux
+
+End Function
+
+Function UnB_Correlacao(Probabilidade As Variant, _
+Valor1 As Variant, Valor2 As Variant) As Double
+
+''' Função que calcula Correlação de uma variável
+'   aleatória (discreta), a partir de dados de
+'   probabilidade e possíveis valores de duas variáveis.
+
+''' Definição de variáveis
+Dim aux As Double
+
+''' Algoritmo
+'   Desvio-padrão equivale à
+'   raiz quadrada da variância
+aux = UnB_Covariancia(Probabilidade, Valor1, Valor2) / _
+    (UnB_DesvioPadrao(Probabilidade, Valor1) * _
+    UnB_DesvioPadrao(Probabilidade, Valor2))
+
+''' Resultado
+UnB_Correlacao = aux
+
+End Function
+
+Function UnB_C_RetornoEsp(Peso As Variant, _
+RetornoEsp As Variant) As Double
+
+''' Função que calcula Retorno esperado de uma
+'   carteira, a partir de dados de pesos e
+'   retornos esperados dos ativos que compões
+'   a carteira.
+
+''' Definição de variáveis
+Dim n, i As Long
+Dim aux As Double
+
+''' Inicialização de variáveis
+n = Peso.Count
+aux = 0
+
+''' Algoritmo
+'   Variável aux acumula o somatório do produto entre
+'   peso e retorno esperado dos ativos
+For i = 1 To n
+    aux = aux + Peso(i) * RetornoEsp(i)
+Next i
+
+''' Resultado
+UnB_C_RetornoEsp = aux
+
+End Function
+
+Function UnB_C_Variancia(Peso As Variant, _
+RiscoTotal As Variant, Correlacao As Variant) As Double
+
+''' Função que calcula Variância do retorno de uma
+'   carteira, a partir de dados de pesos e
+'   riscos totais e correlações dos ativos que compões
+'   a carteira.
+
+''' Definição de variáveis
+Dim n, i, j As Long
+Dim aux As Double
+
+''' Inicialização de variáveis
+n = Peso.Count
+aux = 0
+
+''' Algoritmo
+'   Variável aux acumula o somatório do produto entre
+'   peso e retorno esperado dos ativos
+For i = 1 To n
+    For j = 1 To n
+        aux = aux + Peso(i) * Peso(j) _
+        * RiscoTotal(i) * RiscoTotal(j) * Correlacao(i, j)
+    Next j
+Next i
+
+''' Resultado
+UnB_C_Variancia = aux
+
+End Function
+
+Function UnB_C_RiscoTotal(Peso As Variant, _
+RiscoTotal As Variant, Correlacao As Variant) As Double
+
+''' Função que calcula Risco total de uma
+'   carteira, a partir de dados de pesos e
+'   riscos totais e correlações dos ativos que compões
+'   a carteira.
+
+''' Definição de variáveis
+Dim aux As Double
+
+''' Algoritmo
+'   Variável aux acumula somatório do produto entre
+'   peso e retorno esperado dos ativos
+aux = UnB_C_Variancia(Peso, RiscoTotal, Correlacao) ^ 0.5
+
+''' Resultado
+UnB_C_RiscoTotal = aux
+
+End Function
+Function UnB_ValorPresente(Prazo As Variant, _
+Fluxo As Variant, Taxa As Variant) As Double
+
+''' Função que calcula Valor presente de uma
+'   série de fluxos de caixa, a partir de
+'   prazos, fluxos de caixa e taxa de juros.
+'   Obs: devem ser dadas taxas de juros para cada prazo
+'   e de forma compatível com a unidade dos prazos.
+
+''' Definição de variáveis
+Dim n, i As Long
+Dim aux As Double
+
+''' Inicialização de variáveis
+n = Prazo.Count
+aux = 0
+
+''' Algoritmo
+'   Variável aux acumula o somatório do produto entre
+'   peso e retorno esperado dos ativos
+For i = 1 To n
+    aux = aux + Fluxo(i) / (1 + Taxa(i)) ^ Prazo(i)
+Next i
+
+''' Resultado
+UnB_ValorPresente = aux
+
+End Function
+
+Function UnB_ValorPresenteF(Prazo As Variant, _
+Fluxo As Variant, Taxa As Double) As Double
+
+''' Função que calcula Valor presente de uma
+'   série de fluxos de caixa, a partir de
+'   prazos, fluxos de caixa e taxa de juros fixa.
+'   Obs: a taxa de juros é fixa e deve ser dada de
+'   forma compatível com a unidade dos prazos.
+
+''' Definição de variáveis
+Dim n, i As Long
+Dim aux As Double
+
+''' Inicialização de variáveis
+n = Prazo.Count
+aux = 0
+
+''' Algoritmo
+'   Variável aux acumula o somatório do produto entre
+'   peso e retorno esperado dos ativos
+For i = 1 To n
+    aux = aux + Fluxo(i) / (1 + Taxa) ^ Prazo(i)
+Next i
+
+''' Resultado
+UnB_ValorPresenteF = aux
+
+End Function
+
+
+Function UnB_Duracao(Prazo As Variant, _
+Fluxo As Variant, Taxa As Double) As Double
+
+''' Função que calcula a Duration de uma
+'   série de fluxos de caixa, a partir de
+'   prazos, fluxos de caixa e taxa de juros fixa.
+'   Obs: a taxa de juros é fixa e deve ser dada de
+'   forma compatível com a unidade dos prazos.
+
+''' Definição de variáveis
+Dim n, i As Long
+Dim aux As Double
+
+''' Inicialização de variáveis
+n = Prazo.Count
+aux = 0
+
+''' Algoritmo
+'   Variável aux acumula o somatório do produto entre
+'   peso e retorno esperado dos ativos
+For i = 1 To n
+    aux = aux + Prazo(i) * Fluxo(i) / (1 + Taxa) ^ Prazo(i)
+Next i
+aux = aux / UnB_ValorPresenteF(Prazo, Fluxo, Taxa)
+
+''' Resultado
+UnB_Duracao = aux
+
+End Function
+Function UnB_Sigma(DesvioPadrao As Variant, _
+         Correlacao As Variant) As Variant
+
+''' Função que calcula a matriz de variâncias-covariãncias
+'   a partir de dados de desvio-padrão e correlação.
+
+''' Definição de variáveis
+Dim auxSigma() As Double
+Dim i, j As Integer
+
+''' Inicialização de variáveis
+n = DesvioPadrao.Count
+ReDim auxSigma(1 To n, 1 To n)
+
+''' Algoritmo
+'   Matriz auxSigma é preenchida pelas
+'   variâncias e covariãncias
+For i = 1 To n
+    For j = 1 To n
+        auxSigma(i, j) = DesvioPadrao(i) * DesvioPadrao(j) * Correlacao(i, j)
+    Next j
+Next i
+
+''' Resultado
+UnB_Sigma = auxSigma
+
+End Function
+
+Function UnB_Q(Volatilidade As Variant, _
+         Correlacao As Variant, alfa As Double) As Variant
+
+''' Função que calcula a matriz de variâncias-covariãncias
+'   ajustada para a significâncoa do value-at-risk
+'   a partir de dados de volatilidade, correlação e nível
+'   de significância.
+'   Obs: nessa função, indicamos Volatilidade (ao invés
+'   de Desvio-padrão), pois a função é mais direcionada
+'   para gestão de riscos financeiros.
+
+''' Definição de variáveis
+Dim auxQ() As Double
+Dim i, j As Integer
+
+''' Inicialização de variáveis
+n = Volatilidade.Count
+z = Application.WorksheetFunction.NormSInv(1 - alfa)
+ReDim auxQ(1 To n, 1 To n)
+
+''' Algoritmo
+'   Matriz auxQ é preenchida pelas
+'   variâncias e covariãncias, multiplicadas por z^2
+For i = 1 To n
+    For j = 1 To n
+        auxQ(i, j) = z ^ 2 * Volatilidade(i) * Volatilidade(j) * Correlacao(i, j)
+    Next j
+Next i
+
+''' Resultado
+UnB_Q = auxQ
+End Function
+
+Function UnB_VaR(Mapeamento As Variant, _
+         Volatilidade As Variant, Correlacao As Variant, _
+         alfa As Double) As Double
+
+''' Função que calcula o Value-at-Risk
+'   a partir de dados de mapeamento de fluxos de caixa
+'   volatilidade, correlação e nível de significância.
+'   Se o horizonte de tempo não for indicado, assume-se T=1.
+'   Obs: nessa função, indicamos Volatilidade (ao invés
+'   de Desvio-padrão), pois a função é mais direcionada
+'   para gestão de riscos financeiros.
+
+''' Definição de variáveis
+Dim auxVaR As Double
+Dim i, j As Integer
+    
+''' Inicialização de variáveis
+z = Application.WorksheetFunction.NormSInv(1 - alfa)
+n = Mapeamento.Count
+auxVaR = 0
+
+'   Utiliza-se função que transforma matriz de
+'   correlações em matriz de variâncias-covariâncias
+auxSigma = UnB_Sigma(Volatilidade, Correlacao)
+
+''' Algoritmo
+'   Variável auxVaR acumula o somatório do produto entre
+'   os valores mapeados a a matriz de variâncias-covariâncias
+For i = 1 To n
+    For j = 1 To n
+        auxVaR = auxVaR + Mapeamento(i) * Mapeamento(j) _
+        * auxSigma(i, j)
+    Next j
+Next i
+
+'   Ajuste para o nível de significância e prazo do VaR
+auxVaR = z * auxVaR ^ 0.5
+''' Resultado
+UnB_VaR = auxVaR
+
+End Function
+
+Function UnB_DeltaVaR(Mapeamento As Variant, _
+         Volatilidade As Variant, Correlacao As Variant, _
+         alfa As Double) As Variant
+
+''' Função que calcula o DeltaVaR
+'   a partir de dados de mapeamento de fluxos de caixa
+'   volatilidade, correlação e nível de significância.
+'   Se o horizonte de tempo não for indicado, assume-se T=1.
+'   Obs: nessa função, indicamos Volatilidade (ao invés
+'   de Desvio-padrão), pois a função é mais direcionada
+'   para gestão de riscos financeiros.
+
+''' Definição de variáveis
+Dim auxDeltaVaR() As Double
+Dim i, j As Integer
+Dim VaR As Double
+
+''' Inicialização de variáveis
+z = Application.WorksheetFunction.NormSInv(1 - alfa)
+n = Mapeamento.Count
+'   Função UnB_VaR referente ao cálculo de VaR
+VaR = UnB_VaR(Mapeamento, Volatilidade, Correlacao, alfa)
+
+'   Função UnB_Q referente à matriz de variância-covariãncia
+'   ajustada pelo nível de significância do VaR
+auxQ = UnB_Q(Volatilidade, Correlacao, alfa)
+
+ReDim auxDeltaVaR(1 To n)
+
+''' Algoritmo
+'   Variável auxDeltaVaR acumula o somatório do produto entre
+'   a linha da matriz Q e o vetor de fluxos Mapeados
+For i = 1 To n
+    For j = 1 To n
+        auxDeltaVaR(i) = auxDeltaVaR(i) + auxQ(i, j) * Mapeamento(j)
+    Next j
+    auxDeltaVaR(i) = auxDeltaVaR(i) / VaR
+Next i
+
+''' Resultado
+UnB_DeltaVaR = auxDeltaVaR
+
+End Function
+
+Function UnB_ComponentVaR(Mapeamento As Variant, _
+         Volatilidade As Variant, Correlacao As Variant, _
+         alfa As Double) As Variant
+
+''' Função que calcula o DeltaVaR
+'   a partir de dados de mapeamento de fluxos de caixa
+'   volatilidade, correlação e nível de significância.
+'   Se o horizonte de tempo não for indicado, assume-se T=1.
+'   Obs: nessa função, indicamos Volatilidade (ao invés
+'   de Desvio-padrão), pois a função é mais direcionada
+'   para gestão de riscos financeiros.
+
+''' Definição de variáveis
+Dim auxComponentVaR() As Double
+Dim i, j As Integer
+Dim VaR As Double
+
+''' Inicialização de variáveis
+z = Application.WorksheetFunction.NormSInv(1 - alfa)
+n = Mapeamento.Count
+
+ReDim auxComponentVaR(1 To n)
+
+'   Função UnB_VaR referente ao cálculo de VaR
+VaR = UnB_VaR(Mapeamento, Volatilidade, Correlacao, alfa)
+
+'   Função UnB_Q referente à matriz de variância-covariãncia
+'   ajustada pelo nível de significância do VaR
+auxDeltaVaR = UnB_DeltaVaR(Mapeamento, Volatilidade, Correlacao, alfa)
+
+
+''' Algoritmo
+'   Variável auxDeltaVaR acumula o somatório do produto entre
+'   a linha da matriz Q e o vetor de fluxos Mapeados
+For i = 1 To n
+    auxComponentVaR(i) = auxDeltaVaR(i) * Mapeamento(i)
+Next i
+
+''' Resultado
+UnB_ComponentVaR = auxComponentVaR
+
+End Function
+
+
+Function UnB_IncrementalVaR(Mapeamento As Variant, _
+         Volatilidade As Variant, Correlacao As Variant, _
+         alfa As Double, Incremento As Variant) As Variant
+
+''' Função que calcula o DeltaVaR
+'   a partir de dados de mapeamento de fluxos de caixa
+'   volatilidade, correlação e nível de significância.
+'   Se o horizonte de tempo não for indicado, assume-se T=1.
+'   Obs: nessa função, indicamos Volatilidade (ao invés
+'   de Desvio-padrão), pois a função é mais direcionada
+'   para gestão de riscos financeiros.
+
+''' Definição de variáveis
+Dim aux As Double
+Dim i As Integer
+
+''' Inicialização de variáveis
+n = Mapeamento.Count
+aux = 0
+
+
+'   Função UnB_Q referente à matriz de variância-covariãncia
+'   ajustada pelo nível de significância do VaR
+auxDeltaVaR = UnB_DeltaVaR(Mapeamento, Volatilidade, Correlacao, alfa)
+
+
+''' Algoritmo
+'   Variável auxDeltaVaR acumula o somatório do produto entre
+'   a linha da matriz Q e o vetor de fluxos Mapeados
+For i = 1 To n
+    aux = aux + auxDeltaVaR(i) * Incremento(i)
+Next i
+
+''' Resultado
+UnB_IncrementalVaR = aux
+
+End Function
+
+Function UnB_BCBCor(rho As Double, P1 As Double, P2 As Double, k As Double) As Double
+
+If P1 <= P2 Then
+    Max = P2
+    Min = P1
+    Else
+        Max = P1
+        Min = P2
+    End If
+    
+    aux = rho + (1 - rho) ^ ((Max / Min) ^ k)
+UnB_BCBCor = aux
+End Function
+
+Function UnB_VaRU(Exposicao As Double, _
+         Volatilidade As Double, _
+         alfa As Double) As Double
+
+'''' Preliminar...
+
+
+''' Função que calcula o Value-at-Risk
+'   a partir de dados de mapeamento de fluxos de caixa
+'   volatilidade, correlação e nível de significância.
+'   Se o horizonte de tempo não for indicado, assume-se T=1.
+'   Obs: nessa função, indicamos Volatilidade (ao invés
+'   de Desvio-padrão), pois a função é mais direcionada
+'   para gestão de riscos financeiros.
+
+''' Definição de variáveis
+Dim auxVaRU As Double
+    
+''' Inicialização de variáveis
+z = Application.WorksheetFunction.NormSInv(1 - alfa)
+auxVaRU = Exposicao * z * Volatilidade
+
+'   Ajuste para o nível de significância e prazo do VaR
+
+''' Resultado
+UnB_VaRU = auxVaRU
+
+End Function
+
+
+Function UnB_VaRD(VaR As Variant, _
+         Correlacao As Variant) As Double
+
+'''' Preliminar...
+
+''' Função que calcula o Value-at-Risk
+'   a partir de dados de VaR individuais
+'   e correlação
+
+''' Definição de variáveis
+Dim auxVaRD As Double
+Dim i, j As Integer
+    
+''' Inicialização de variáveis
+n = VaR.Count
+auxVaRD = 0
+
+''' Algoritmo
+'   Variável auxVaR acumula o somatório do produto entre
+'   os valores mapeados a a matriz de variâncias-covariâncias
+For i = 1 To n
+    For j = 1 To n
+        auxVaRD = auxVaRD + VaR(i) * VaR(j) _
+        * Correlacao(i, j)
+    Next j
+Next i
+
+'   Ajuste para o nível de significância e prazo do VaR
+auxVaRD = auxVaRD ^ 0.5
+''' Resultado
+UnB_VaRD = auxVaRD
+
+End Function
